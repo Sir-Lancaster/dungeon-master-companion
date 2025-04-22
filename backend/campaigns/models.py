@@ -33,18 +33,19 @@ class Encounter(models.Model):
     campaign = models.ForeignKey('Campaign', on_delete=models.CASCADE, related_name='encounters')
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-
-    # Simple monster stat fields
-    monster_name = models.CharField(max_length=100)
-    monster_hp = models.IntegerField()
-    monster_ac = models.IntegerField()
-    monster_attack_bonus = models.IntegerField()
-    monster_damage = models.CharField(max_length=50)
-
-    # Track if it's completed
     is_completed = models.BooleanField(default=False)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.name} ({'Completed' if self.is_completed else 'Pending'})"
+
+class Monster(models.Model):
+    encounter = models.ForeignKey(Encounter, on_delete=models.CASCADE, related_name='monsters')
+    name = models.CharField(max_length=100)
+    hp = models.IntegerField()
+    ac = models.IntegerField()
+    attack_bonus = models.IntegerField()
+    damage = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.name} (HP: {self.hp}, AC: {self.ac})"
