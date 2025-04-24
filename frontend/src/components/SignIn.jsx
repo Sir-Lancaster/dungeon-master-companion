@@ -1,25 +1,29 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function SignIn() {
-    const [ username, setUsername ] = useState('');
-    const [ password, setPassword ] = useState('');
-    const [ message, setMessage ] = useState(''); 
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [message, setMessage] = useState('');
+    const navigate = useNavigate(); // Hook for navigation
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const response = await fetch('http://127.0.0.1:8000/api/login/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password }),
+            credentials: 'include', // Include cookies in the request
         });
         const data = await response.json();
         if (response.ok) {
             setMessage('Login successful!');
-            // Redirect or perform other actions
+            setTimeout(() => navigate('/'), 1000); // Redirect to dashboard after 1 second
         } else {
             setMessage(data.error || 'Login failed');
         }
     };
+
     return (
         <div>
             <h1>Sign In</h1>
@@ -49,3 +53,5 @@ function SignIn() {
         </div>
     );
 }
+
+export default SignIn;

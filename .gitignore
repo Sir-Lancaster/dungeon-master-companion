@@ -12,3 +12,4 @@ backend/campaigns/__pycache__/__init__.cpython-312.pyc
 
 backend/venv/
 backend/dmCompanion/__pycache__/wsgi.cpython-312.pyc
+backend/dmCompanion/__pycache__/

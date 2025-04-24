@@ -43,7 +43,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Must be at the top
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -126,6 +126,24 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+CORS_ALLOW_CREDENTIALS = True  # Allow cookies and credentials to be sent
+
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:5173",  # React dev server
+    "http://127.0.0.1:5173",  # React dev server (127.0.0.1)
+    "http://localhost:5173",  # React dev server (localhost)
 ]
+
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
+    "x-csrftoken",
+    "accept",
+    "origin",
+    "user-agent",
+    "accept-encoding",
+    "access-control-allow-origin",
+]
+
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/api/login/'
+LOGIN_URL = '/api/login/'
