@@ -128,6 +128,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_CREDENTIALS = True  # Allow cookies and credentials to be sent
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:5173",  # React dev server (127.0.0.1)
+    "http://localhost:5173",  # React dev server (localhost)
+]
+
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",  # React dev server (127.0.0.1)
     "http://localhost:5173",  # React dev server (localhost)

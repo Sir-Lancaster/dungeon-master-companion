@@ -30,6 +30,39 @@ const Dashboard = () => {
         .catch(error => console.error('Error fetching dashboard data:', error));
     }, [navigate]);
 
+    const handleLogout = () => {
+        const getCSRFToken = () => {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'csrftoken') {
+                    return value;
+                }
+            }
+            return null;
+        };
+
+        const csrfToken = getCSRFToken();
+
+        fetch('http://127.0.0.1:8000/api/logout/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken, // Include CSRF token in the headers
+            },
+            credentials: 'include',
+        })
+        .then(response => {
+            if (response.ok) {
+                localStorage.removeItem('token'); // Clear token from localStorage
+                navigate('/signin'); // Redirect to sign-in page
+            } else {
+                console.error('Error logging out:', response.statusText);
+            }
+        })
+        .catch(error => console.error('Error logging out:', error));
+    };
+
     if (!dashboardData) {
         return <div>Loading...</div>;
     }
@@ -37,6 +70,7 @@ const Dashboard = () => {
     return (
         <div>
             <h1>Welcome, {dashboardData.user.username}</h1>
+            <button onClick={handleLogout}>Logout</button>
             {dashboardData.campaigns.map(campaign => (
                 <div key={campaign.id}>
                     <h2>{campaign.title}</h2>
