@@ -24,10 +24,13 @@ class NPC(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     rolls = models.TextField(blank=True)
-    stats = models.TextField(blank=True)
+    hp = models.IntegerField(default=10)
+    ac = models.IntegerField(default=10)
+    attack_bonus = models.IntegerField(default=0)
+    damage = models.CharField(max_length=50, default='1d6')
 
     def __str__(self):
-        return self.name
+        return f"{self.name} (HP: {self.hp}, AC: {self.ac})"
     
 class Encounter(models.Model):
     campaign = models.ForeignKey('Campaign', on_delete=models.CASCADE, related_name='encounters')
