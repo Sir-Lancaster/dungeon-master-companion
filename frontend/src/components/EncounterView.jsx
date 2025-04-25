@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 function Encounter() {
-    const { campaignId, encounterId } = useParams(); // Get the campaign ID and encounter ID from the URL
+    const { campaignId, encounterId, monsterId } = useParams(); // Get the campaign ID and encounter ID from the URL
     const navigate = useNavigate();
     const [campaign, setCampaign] = useState(null); // State for campaign details
     const [encounter, setEncounter] = useState({
@@ -14,6 +14,7 @@ function Encounter() {
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [monsters, setMonsters] = useState([]); // State for monsters
 
     useEffect(() => {
         // Fetch the encounter details
@@ -39,6 +40,31 @@ function Encounter() {
                 setError(err.message);
                 setIsLoading(false);
             });
+
+            // fetch the monsters for the encounter
+        fetch(`http://127.0.0.1:8000/api/campaigns/${campaignId}/encounters/${encounterId}/monsters/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Include cookies for authentication
+        })
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Failed to fetch monsters');
+                }
+            }
+            )
+            .then((data) => {
+                setMonsters(data);
+            }
+            )
+            .catch((err) => {
+                setError(err.message);
+            }
+            );
     }, [encounterId, campaignId]); // Dependency array for useEffect
 
     const getCSRFToken = () => {
@@ -89,6 +115,22 @@ function Encounter() {
                     <button onClick={() => navigate(`/campaigns/${campaignId}/encounters/`)}>Back to Encounters</button>
                 </div>
             )}
+            <div>
+                <h3>Monsters:</h3>
+                <button onClick={() => navigate(`/campaigns/${campaignId}/encounters/${encounterId}/monsters/create`)}>Add Monster</button>
+                {monsters.length > 0 ? (
+                    <ul>
+                        {monsters.map((monster) => (
+                            <li key={monster.id}>
+                                <h2 onClick={() => navigate(`/campaigns/${campaignId}/encounters/${encounterId}/monsters/${monster.id}`)}>{monster.name}</h2>
+                                <p>{monster.description}</p>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No monsters found for this encounter.</p>
+                )}
+            </div>
         </div>
     );
 }

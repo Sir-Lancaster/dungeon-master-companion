@@ -11,6 +11,8 @@ import NPC from './components/NPCView';
 import Encounters from './components/Encounters';
 import CreateOrEditEncounter from './components/NewEncounter';
 import Encounter from './components/EncounterView'; // Import the Encounter component
+import CreateOrEditMonster from './components/NewMonster';
+import Monster from './components/MonsterView'; // Import the Monster component
 
 import './App.css';
 
@@ -47,6 +49,11 @@ function App() {
                     <Route path="/campaigns/:campaignId/encounters/create" element={<CreateOrEditEncounter />} />
                     <Route path="/campaigns/:campaignId/encounters/edit/:encounterId" element={<CreateOrEditEncounter isEditing={true} />} />
                     <Route path="/campaigns/:campaignId/encounters/:encounterId" element={<Encounter />} /> 
+
+                    {/* Route for the monster view */}
+                    <Route path="/campaigns/:campaignId/encounters/:encounterId/monsters/create" element={<CreateOrEditMonster />} /> 
+                    <Route path="/campaigns/:campaignId/encounters/:encounterId/monsters/edit/:monsterId" element={<CreateOrEditMonster isEditing={true} />} />
+                    <Route path="/campaigns/:campaignId/encounters/:encounterId/monsters/:monsterId" element={<Monster />} />                    {/* Route for the encounter view */}
 
                     {/* Add more routes as needed */}
 

@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
-from .models import Campaign, NPC, Quest, Encounter
+from .models import Campaign, NPC, Quest, Encounter, Monster
 import json
 
 @csrf_exempt
@@ -311,5 +311,111 @@ def list_encounters(request, campaign_id):
             return JsonResponse(list(encounters), safe=False, status=200)
         except Campaign.DoesNotExist:
             return JsonResponse({'error': 'Campaign not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+# Monster CRUD operations
+def create_monster(request, campaign_id, encounter_id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            name = data.get('name')
+            hp = data.get('hp')
+            ac = data.get('ac')
+            attack_bonus = data.get('attack_bonus')
+            damage = data.get('damage')
+
+            # Validate the encounter
+            encounter = Encounter.objects.get(id=encounter_id, campaign__id=campaign_id, campaign__user=request.user)
+
+            # Create the monster
+            monster = Monster.objects.create(
+                encounter=encounter,
+                name=name,
+                hp=hp,
+                ac=ac,
+                attack_bonus=attack_bonus,
+                damage=damage
+            )
+            return JsonResponse({'message': 'Monster created successfully!', 'monster_id': monster.id}, status=201)
+        except Encounter.DoesNotExist:
+            return JsonResponse({'error': 'Encounter not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def update_monster(request, campaign_id, encounter_id, monster_id):
+    if request.method == 'PUT':
+        try:
+            monster = Monster.objects.get(
+                id=monster_id,
+                encounter__id=encounter_id,
+                encounter__campaign__id=campaign_id,
+                encounter__campaign__user=request.user
+            )
+            data = json.loads(request.body)
+
+            # Update monster fields
+            monster.name = data.get('name', monster.name)
+            monster.hp = data.get('hp', monster.hp)
+            monster.ac = data.get('ac', monster.ac)
+            monster.attack_bonus = data.get('attack_bonus', monster.attack_bonus)
+            monster.damage = data.get('damage', monster.damage)
+            monster.save()
+
+            return JsonResponse({'message': 'Monster updated successfully!'}, status=200)
+        except Monster.DoesNotExist:
+            return JsonResponse({'error': 'Monster not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def delete_monster(request, campaign_id, encounter_id, monster_id):
+    if request.method == 'DELETE':
+        try:
+            monster = Monster.objects.get(
+                id=monster_id,
+                encounter__id=encounter_id,
+                encounter__campaign__id=campaign_id,
+                encounter__campaign__user=request.user
+            )
+            monster.delete()
+            return JsonResponse({'message': 'Monster deleted successfully!'}, status=200)
+        except Monster.DoesNotExist:
+            return JsonResponse({'error': 'Monster not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def get_monster(request, campaign_id, encounter_id, monster_id):
+    if request.method == 'GET':
+        try:
+            monster = Monster.objects.get(
+                id=monster_id,
+                encounter__id=encounter_id,
+                encounter__campaign__id=campaign_id,
+                encounter__campaign__user=request.user
+            )
+            data = {
+                'id': monster.id,
+                'name': monster.name,
+                'hp': monster.hp,
+                'ac': monster.ac,
+                'attack_bonus': monster.attack_bonus,
+                'damage': monster.damage,
+            }
+            return JsonResponse(data, status=200)
+        except Monster.DoesNotExist:
+            return JsonResponse({'error': 'Monster not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def list_monsters(request, campaign_id, encounter_id):
+    if request.method == 'GET':
+        try:
+            encounter = Encounter.objects.get(id=encounter_id, campaign__id=campaign_id, campaign__user=request.user)
+            monsters = Monster.objects.filter(encounter=encounter).values('id', 'name', 'hp', 'ac', 'attack_bonus', 'damage')
+            return JsonResponse(list(monsters), safe=False, status=200)
+        except Encounter.DoesNotExist:
+            return JsonResponse({'error': 'Encounter not found'}, status=404)
 
     return JsonResponse({'message': 'Method not allowed!'}, status=405)
