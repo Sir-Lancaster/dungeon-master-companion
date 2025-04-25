@@ -18,6 +18,7 @@ from django.urls import path
 from campaigns.views import login_view, logout_view, register_view, dashboard
 from campaigns.views import create_campaign, update_campaign, delete_campaign, get_campaign
 from campaigns.views import create_npc, update_npc, delete_npc, get_npc, list_npcs
+from campaigns.views import create_encounter, update_encounter, delete_encounter, get_encounter, list_encounters
 urlpatterns = [
     path('', dashboard, name='home'),  # Root URL points to the dashboard
     path('api/login/', login_view, name='login'),
@@ -33,4 +34,9 @@ urlpatterns = [
     path('api/campaigns/<int:campaign_id>/npcs/delete/<int:npc_id>/', delete_npc, name='delete_npc'),
     path('api/campaigns/<int:campaign_id>/npcs/<int:npc_id>/', get_npc, name='npc_detail'),
     path('api/campaigns/<int:campaign_id>/npcs/', list_npcs, name='list_npcs'),
+    path('api/campaigns/<int:campaign_id>/encounters/create_encounter/', create_encounter, name='create_encounter'),
+    path('api/campaigns/<int:campaign_id>/encounters/update/<int:encounter_id>/', update_encounter, name='update_encounter'),
+    path('api/campaigns/<int:campaign_id>/encounters/delete/<int:encounter_id>/', delete_encounter, name='delete_encounter'),
+    path('api/campaigns/<int:campaign_id>/encounters/<int:encounter_id>/', get_encounter, name='encounter_detail'),
+    path('api/campaigns/<int:campaign_id>/encounters/', list_encounters, name='list_encounters'),
 ]

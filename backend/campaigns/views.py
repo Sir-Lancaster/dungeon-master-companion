@@ -237,3 +237,79 @@ def list_npcs(request, campaign_id):
             return JsonResponse({'error': 'Campaign not found'}, status=404)
 
     return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+# Encounter CRUD operations
+def create_encounter(request, campaign_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        name = data.get('name')
+        description = data.get('description')
+
+        try:
+            campaign = Campaign.objects.get(id=campaign_id, user=request.user)
+            encounter = Encounter.objects.create(
+                campaign=campaign,
+                name=name,
+                description=description
+            )
+            return JsonResponse({'message': 'Encounter created successfully!', 'encounter_id': encounter.id}, status=201)
+        except Campaign.DoesNotExist:
+            return JsonResponse({'error': 'Campaign not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def update_encounter(request, campaign_id, encounter_id):
+    if request.method == 'PUT':
+        try:
+            encounter = Encounter.objects.get(id=encounter_id, campaign__id=campaign_id, campaign__user=request.user)
+            data = json.loads(request.body)
+
+            # Update encounter fields
+            encounter.name = data.get('name', encounter.name)
+            encounter.description = data.get('description', encounter.description)
+            encounter.is_completed = data.get('is_completed', encounter.is_completed)
+            encounter.save()
+
+            return JsonResponse({'message': 'Encounter updated successfully!'}, status=200)
+        except Encounter.DoesNotExist:
+            return JsonResponse({'error': 'Encounter not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def delete_encounter(request, campaign_id, encounter_id):
+    if request.method == 'DELETE':
+        try:
+            encounter = Encounter.objects.get(id=encounter_id, campaign__id=campaign_id, campaign__user=request.user)
+            encounter.delete()
+            return JsonResponse({'message': 'Encounter deleted successfully!'}, status=200)
+        except Encounter.DoesNotExist:
+            return JsonResponse({'error': 'Encounter not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def get_encounter(request, campaign_id, encounter_id):
+    if request.method == 'GET':
+        try:
+            encounter = Encounter.objects.get(id=encounter_id, campaign__id=campaign_id, campaign__user=request.user)
+            data = {
+                'id': encounter.id,
+                'name': encounter.name,
+                'description': encounter.description,
+                'is_completed': encounter.is_completed,
+            }
+            return JsonResponse(data, status=200)
+        except Encounter.DoesNotExist:
+            return JsonResponse({'error': 'Encounter not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def list_encounters(request, campaign_id):  
+    if request.method == 'GET':
+        try:
+            campaign = Campaign.objects.get(id=campaign_id, user=request.user)
+            encounters = Encounter.objects.filter(campaign=campaign).values('id', 'name', 'description', 'is_completed')
+            return JsonResponse(list(encounters), safe=False, status=200)
+        except Campaign.DoesNotExist:
+            return JsonResponse({'error': 'Campaign not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)

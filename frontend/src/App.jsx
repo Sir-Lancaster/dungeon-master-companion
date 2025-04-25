@@ -8,6 +8,9 @@ import Campaign from './components/Campaign';
 import NPCs from './components/NPCs';
 import CreateOrEditNPC from './components/NewNPC';
 import NPC from './components/NPCView';
+import Encounters from './components/Encounters';
+import CreateOrEditEncounter from './components/NewEncounter';
+import Encounter from './components/EncounterView'; // Import the Encounter component
 
 import './App.css';
 
@@ -39,7 +42,13 @@ function App() {
                     <Route path="/campaigns/:campaignId/npcs/edit/:npcId" element={<CreateOrEditNPC isEditing={true} />} />
                     <Route path="/campaigns/:campaignId/npcs/:npcId" element={<NPC />} /> {/* Route for the NPC view page */}
 
-                    {/* Route for the NPC view page */}
+                    {/* Routes for the encounter pages */}
+                    <Route path="/campaigns/:campaignId/encounters" element={<Encounters />} />
+                    <Route path="/campaigns/:campaignId/encounters/create" element={<CreateOrEditEncounter />} />
+                    <Route path="/campaigns/:campaignId/encounters/edit/:encounterId" element={<CreateOrEditEncounter isEditing={true} />} />
+                    <Route path="/campaigns/:campaignId/encounters/:encounterId" element={<Encounter />} /> 
+
+                    {/* Add more routes as needed */}
 
                 </Routes>
             </div>
