@@ -4,6 +4,7 @@ import Dashboard from './components/Dashboard';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 import CreateCampaign from './components/NewCampaign';
+import Campaign from './components/Campaign';
 
 import './App.css';
 
@@ -20,9 +21,16 @@ function App() {
 
                     {/* Route for the sign-up page */}
                     <Route path="/signup" element={<SignUp />} />
+
                     {/* Route for the create campaign page */}
                     <Route path="/create-campaign" element={<CreateCampaign />} />
-        
+
+                    {/* Routes for campaign viewing, deleting, and edditing */}
+                    <Route path="/campaigns/:campaignId" element={<Campaign />} />
+                    <Route path="/campaigns/edit/:campaignId" element={<CreateCampaign isEditing={true} />} />
+
+                    {/* Add more routes as needed */}
+
                 </Routes>
             </div>
         </Router>

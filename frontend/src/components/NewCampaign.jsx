@@ -1,13 +1,75 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
-function CreateCampaign() {
+function CreateOrEditCampaign({ isEditing = false }) {
     const navigate = useNavigate();
+    const { campaignId } = useParams(); // Get campaign ID from URL if editing
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [message, setMessage] = useState('');
 
-    // Function to get the CSRF token from cookies
+    // Fetch existing campaign data if editing
+    useEffect(() => {
+        if (isEditing && campaignId) {
+            fetch(`http://127.0.0.1:8000/api/campaigns/${campaignId}/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Failed to fetch campaign details');
+                    }
+                })
+                .then((data) => {
+                    setTitle(data.title);
+                    setDescription(data.description);
+                })
+                .catch((err) => {
+                    setMessage(err.message);
+                });
+        }
+    }, [isEditing, campaignId]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const csrfToken = getCSRFToken(); // Get the CSRF token
+
+        const url = isEditing
+            ? `http://127.0.0.1:8000/api/campaigns/update/${campaignId}/`
+            : 'http://127.0.0.1:8000/api/create_campaign/';
+        const method = isEditing ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken, // Include the CSRF token in the headers
+            },
+            credentials: 'include', // Include cookies for authentication
+            body: JSON.stringify({ title, description }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            setMessage(isEditing ? 'Campaign updated successfully!' : 'Campaign created successfully!');
+            if (isEditing) {
+                // Navigate back to the campaign details page after updating
+                navigate(`/campaigns/${campaignId}`);
+            } else {
+                // Clear the form after creating a new campaign
+                setTitle('');
+                setDescription('');
+            }
+        } else {
+            setMessage(data.error || 'Failed to save campaign');
+        }
+    };
+
     const getCSRFToken = () => {
         const cookies = document.cookie.split(';');
         for (let cookie of cookies) {
@@ -19,33 +81,9 @@ function CreateCampaign() {
         return null;
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const csrfToken = getCSRFToken(); // Get the CSRF token
-
-        const response = await fetch('http://127.0.0.1:8000/api/create_campaign/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken, // Include the CSRF token in the headers
-            },
-            credentials: 'include', // Include cookies for authentication
-            body: JSON.stringify({ title, description }),
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            setMessage('Campaign created successfully!');
-            setTitle('');
-            setDescription('');
-        } else {
-            setMessage(data.error || 'Failed to create campaign');
-        }
-    };
-
     return (
         <div>
-            <h1>Create Campaign</h1>
+            <h1>{isEditing ? 'Edit Campaign' : 'Create Campaign'}</h1>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Title:</label>
@@ -64,12 +102,17 @@ function CreateCampaign() {
                         required
                     />
                 </div>
-                <button type="submit">Create</button>
-                <button type="button" onClick={() => navigate('/')}>Dashboard</button>
+                <button type="submit">{isEditing ? 'Update' : 'Create'}</button>
+                <button
+                    type="button"
+                    onClick={() => navigate(isEditing ? `/campaigns/${campaignId}` : '/')}
+                >
+                    {isEditing ? 'Back to Campaign' : 'Dashboard'}
+                </button>
             </form>
             {message && <p>{message}</p>}
         </div>
     );
 }
 
-export default CreateCampaign;
+export default CreateOrEditCampaign;

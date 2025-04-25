@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from campaigns.views import login_view, logout_view, register_view, dashboard, create_campaign, update_campaign, delete_campaign
+from campaigns.views import login_view, logout_view, register_view, dashboard, create_campaign, update_campaign, delete_campaign, get_campaign
 
 urlpatterns = [
     path('', dashboard, name='home'),  # Root URL points to the dashboard
@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/create_campaign/', create_campaign, name='create_campaign'),
     path('api/campaigns/update/<int:campaign_id>/', update_campaign, name='update_campaign'),
     path('api/campaigns/delete/<int:campaign_id>/', delete_campaign, name='delete_campaign'),
+    path('api/campaigns/<int:campaign_id>/', get_campaign, name='campaign_detail'),
 ]

@@ -70,33 +70,16 @@ const Dashboard = () => {
         <div>
             <h1>Welcome, {dashboardData.user.username}</h1>
             <button onClick={handleLogout}>Logout</button>
-            <button onClick={() => navigate('/create-campaign')}>Create Campaign</button> 
+            <button onClick={() => navigate('/create-campaign')}>New Campaign</button> 
             {dashboardData.campaigns.map(campaign => (
                 <div key={campaign.id}>
-                    <h2>{campaign.title}</h2>
+                    <h2 
+                        onClick={() => navigate(`/campaigns/${campaign.id}`)} 
+                        style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                    >
+                        {campaign.title}
+                    </h2>
                     <p>{campaign.description}</p>
-                    <h3>NPCs</h3>
-                    <ul>
-                        {campaign.npcs.map(npc => (
-                            <li key={npc.id}>{npc.name}: {npc.description}</li>
-                        ))}
-                    </ul>
-                    <h3>Quests</h3>
-                    <ul>
-                        {campaign.quests.map(quest => (
-                            <li key={quest.id}>
-                                {quest.title} - {quest.completed ? 'Completed' : 'In Progress'}
-                            </li>
-                        ))}
-                    </ul>
-                    <h3>Encounters</h3>
-                    <ul>
-                        {campaign.encounters.map(encounter => (
-                            <li key={encounter.id}>
-                                {encounter.name} - {encounter.is_completed ? 'Completed' : 'Pending'}
-                            </li>
-                        ))}
-                    </ul>
                 </div>
             ))}
         </div>
