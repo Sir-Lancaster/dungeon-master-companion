@@ -81,3 +81,62 @@ def register_view(request):
         return JsonResponse({'message': 'Registration successful!'}, status=201)
 
     return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+# Campaign CRUD operations
+def create_campaign(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        title = data.get('title')
+        description = data.get('description')
+
+        campaign = Campaign.objects.create(
+            user=request.user,
+            title=title,
+            description=description
+        )
+        return JsonResponse({'message': 'Campaign created successfully!', 'campaign_id': campaign.id}, status=201)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def update_campaign(request, campaign_id):
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        title = data.get('title')
+        description = data.get('description')
+
+        try:
+            campaign = Campaign.objects.get(id=campaign_id, user=request.user)
+            campaign.title = title
+            campaign.description = description
+            campaign.save()
+            return JsonResponse({'message': 'Campaign updated successfully!'}, status=200)
+        except Campaign.DoesNotExist:
+            return JsonResponse({'error': 'Campaign not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def delete_campaign(request, campaign_id):
+    if request.method == 'DELETE':
+        try:
+            campaign = Campaign.objects.get(id=campaign_id, user=request.user)
+            campaign.delete()
+            return JsonResponse({'message': 'Campaign deleted successfully!'}, status=200)
+        except Campaign.DoesNotExist:
+            return JsonResponse({'error': 'Campaign not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def get_campaign(request, campaign_id):
+    if request.method == 'GET':
+        try:
+            campaign = Campaign.objects.get(id=campaign_id, user=request.user)
+            data = {
+                'id': campaign.id,
+                'title': campaign.title,
+                'description': campaign.description,
+            }
+            return JsonResponse(data, status=200)
+        except Campaign.DoesNotExist:
+            return JsonResponse({'error': 'Campaign not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
