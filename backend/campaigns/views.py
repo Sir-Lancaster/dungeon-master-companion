@@ -140,3 +140,100 @@ def get_campaign(request, campaign_id):
             return JsonResponse({'error': 'Campaign not found'}, status=404)
 
     return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+# NPC CRUD operations
+def create_npc(request, campaign_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        name = data.get('name')
+        description = data.get('description')
+        rolls = data.get('rolls', "")  # Provide a default value for rolls
+        hp = data.get('hp', 10)
+        ac = data.get('ac', 10)
+        attack_bonus = data.get('attack_bonus', 0)
+        damage = data.get('damage', '1d6')
+
+        try:
+            campaign = Campaign.objects.get(id=campaign_id, user=request.user)
+            npc = NPC.objects.create(
+                campaign=campaign,
+                name=name,
+                description=description,
+                rolls=rolls,  # Include rolls here
+                hp=hp,
+                ac=ac,
+                attack_bonus=attack_bonus,
+                damage=damage
+            )
+            return JsonResponse({'message': 'NPC created successfully!', 'npc_id': npc.id}, status=201)
+        except Campaign.DoesNotExist:
+            return JsonResponse({'error': 'Campaign not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def update_npc(request, campaign_id, npc_id):
+    if request.method == 'PUT':
+        try:
+            # Ensure the NPC belongs to the specified campaign and user
+            npc = NPC.objects.get(id=npc_id, campaign__id=campaign_id, campaign__user=request.user)
+            data = json.loads(request.body)
+
+            # Update NPC fields
+            npc.name = data.get('name', npc.name)
+            npc.description = data.get('description', npc.description)
+            npc.rolls = data.get('rolls', npc.rolls)
+            npc.hp = data.get('hp', npc.hp)
+            npc.ac = data.get('ac', npc.ac)
+            npc.attack_bonus = data.get('attack_bonus', npc.attack_bonus)
+            npc.damage = data.get('damage', npc.damage)
+            npc.save()
+
+            return JsonResponse({'message': 'NPC updated successfully!'}, status=200)
+        except NPC.DoesNotExist:
+            return JsonResponse({'error': 'NPC not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def delete_npc(request, campaign_id, npc_id):
+    if request.method == 'DELETE':
+        try:
+            npc = NPC.objects.get(id=npc_id, campaign_id=campaign_id, campaign__user=request.user)
+            npc.delete()
+            return JsonResponse({'message': 'NPC deleted successfully!'}, status=200)
+        except NPC.DoesNotExist:
+            return JsonResponse({'error': 'NPC not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def get_npc(request, campaign_id, npc_id):
+    if request.method == 'GET':
+        try:
+            npc = NPC.objects.get(id=npc_id, campaign__id=campaign_id, campaign__user=request.user)
+            data = {
+                'id': npc.id,
+                'name': npc.name,
+                'description': npc.description,
+                'rolls': npc.rolls,
+                'hp': npc.hp,
+                'ac': npc.ac,
+                'attack_bonus': npc.attack_bonus,
+                'damage': npc.damage,
+            }
+            return JsonResponse(data, status=200)
+        except NPC.DoesNotExist:
+            return JsonResponse({'error': 'NPC not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def list_npcs(request, campaign_id):
+    if request.method == 'GET':
+        try:
+            campaign = Campaign.objects.get(id=campaign_id, user=request.user)
+            npcs = NPC.objects.filter(campaign=campaign).values('id', 'name', 'description')
+            return JsonResponse(list(npcs), safe=False, status=200)
+        except Campaign.DoesNotExist:
+            return JsonResponse({'error': 'Campaign not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)

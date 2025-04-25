@@ -5,6 +5,9 @@ import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 import CreateCampaign from './components/NewCampaign';
 import Campaign from './components/Campaign';
+import NPCs from './components/NPCs';
+import CreateOrEditNPC from './components/NewNPC';
+import NPC from './components/NPCView';
 
 import './App.css';
 
@@ -30,6 +33,13 @@ function App() {
                     <Route path="/campaigns/edit/:campaignId" element={<CreateCampaign isEditing={true} />} />
 
                     {/* Add more routes as needed */}
+                    {/* Route for the NPCs page */}
+                    <Route path="/campaigns/:campaignId/npcs" element={<NPCs />} />
+                    <Route path="/campaigns/:campaignId/npcs/create" element={<CreateOrEditNPC />} />
+                    <Route path="/campaigns/:campaignId/npcs/edit/:npcId" element={<CreateOrEditNPC isEditing={true} />} />
+                    <Route path="/campaigns/:campaignId/npcs/:npcId" element={<NPC />} /> {/* Route for the NPC view page */}
+
+                    {/* Route for the NPC view page */}
 
                 </Routes>
             </div>
