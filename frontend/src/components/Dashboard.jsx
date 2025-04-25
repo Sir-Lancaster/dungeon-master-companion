@@ -70,6 +70,7 @@ const Dashboard = () => {
         <div>
             <h1>Welcome, {dashboardData.user.username}</h1>
             <button onClick={handleLogout}>Logout</button>
+            <button onClick={() => navigate('/create-campaign')}>Create Campaign</button> 
             {dashboardData.campaigns.map(campaign => (
                 <div key={campaign.id}>
                     <h2>{campaign.title}</h2>

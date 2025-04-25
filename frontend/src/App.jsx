@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
+import CreateCampaign from './components/NewCampaign';
+
 import './App.css';
 
 function App() {
@@ -18,6 +20,9 @@ function App() {
 
                     {/* Route for the sign-up page */}
                     <Route path="/signup" element={<SignUp />} />
+                    {/* Route for the create campaign page */}
+                    <Route path="/create-campaign" element={<CreateCampaign />} />
+        
                 </Routes>
             </div>
         </Router>
