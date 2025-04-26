@@ -20,6 +20,7 @@ from campaigns.views import create_campaign, update_campaign, delete_campaign, g
 from campaigns.views import create_npc, update_npc, delete_npc, get_npc, list_npcs
 from campaigns.views import create_encounter, update_encounter, delete_encounter, get_encounter, list_encounters
 from campaigns.views import create_monster, update_monster, delete_monster, get_monster, list_monsters
+from campaigns.views import create_quest, update_quest, delete_quest, get_quest, list_quests
 
 urlpatterns = [
     path('', dashboard, name='home'),  # Root URL points to the dashboard
@@ -46,4 +47,9 @@ urlpatterns = [
     path('api/campaigns/<int:campaign_id>/encounters/<int:encounter_id>/monsters/<int:monster_id>/', get_monster, name='get_monster'),
     path('api/campaigns/<int:campaign_id>/encounters/<int:encounter_id>/monsters/update/<int:monster_id>/', update_monster, name='update_monster'),
     path('api/campaigns/<int:campaign_id>/encounters/<int:encounter_id>/monsters/delete/<int:monster_id>/', delete_monster, name='delete_monster'),
+    path('api/campaigns/<int:campaign_id>/quests/create_quest/', create_quest, name='create_quest'),
+    path('api/campaigns/<int:campaign_id>/quests/update/<int:quest_id>/', update_quest, name='update_quest'),
+    path('api/campaigns/<int:campaign_id>/quests/delete/<int:quest_id>/', delete_quest, name='delete_quest'),
+    path('api/campaigns/<int:campaign_id>/quests/<int:quest_id>/', get_quest, name='quest_detail'),
+    path('api/campaigns/<int:campaign_id>/quests/', list_quests, name='list_quests')
 ]

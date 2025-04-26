@@ -81,6 +81,7 @@ function Campaign() {
             <button onClick={() => navigate(`/campaigns/edit/${campaignId}`)}>Edit Campaign</button>
             <button onClick={() => navigate(`/campaigns/${campaignId}/npcs`)}>View NPCs</button>
             <button onClick={() => navigate(`/campaigns/${campaignId}/encounters`)}>View Encounters</button>
+            <button onClick={() => navigate(`/campaigns/${campaignId}/quests`)}>View Quests</button>
             <button onClick={handleDelete} style={{ color: 'red' }}>Delete Campaign</button>
         </div>
     );

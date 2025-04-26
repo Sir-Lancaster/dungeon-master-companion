@@ -13,6 +13,9 @@ import CreateOrEditEncounter from './components/NewEncounter';
 import Encounter from './components/EncounterView'; // Import the Encounter component
 import CreateOrEditMonster from './components/NewMonster';
 import Monster from './components/MonsterView'; // Import the Monster component
+import Quests from './components/Quests';
+import CreateOrEditQuest from './components/NewQuest';
+import Quest from './components/QuestView'; // Import the Quest component
 
 import './App.css';
 
@@ -53,9 +56,13 @@ function App() {
                     {/* Route for the monster view */}
                     <Route path="/campaigns/:campaignId/encounters/:encounterId/monsters/create" element={<CreateOrEditMonster />} /> 
                     <Route path="/campaigns/:campaignId/encounters/:encounterId/monsters/edit/:monsterId" element={<CreateOrEditMonster isEditing={true} />} />
-                    <Route path="/campaigns/:campaignId/encounters/:encounterId/monsters/:monsterId" element={<Monster />} />                    {/* Route for the encounter view */}
-
-                    {/* Add more routes as needed */}
+                    <Route path="/campaigns/:campaignId/encounters/:encounterId/monsters/:monsterId" element={<Monster />} />    
+                    
+                    {/* Route for quests */}
+                    <Route path="/campaigns/:campaignId/quests" element={<Quests />} />
+                    <Route path="/campaigns/:campaignId/quests/create" element={<CreateOrEditQuest />} />
+                    <Route path="/campaigns/:campaignId/quests/edit/:questId" element={<CreateOrEditQuest isEditing={true} />} />
+                    <Route path="/campaigns/:campaignId/quests/:questId" element={<Quest />} /> 
 
                 </Routes>
             </div>

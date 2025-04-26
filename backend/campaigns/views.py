@@ -419,3 +419,73 @@ def list_monsters(request, campaign_id, encounter_id):
             return JsonResponse({'error': 'Encounter not found'}, status=404)
 
     return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+#Quest CRUD operations
+def create_quest(request, campaign_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        quest = Quest.objects.create(
+            campaign_id=campaign_id,
+            title=data.get('name'),  # Map 'name' from the frontend to 'title'
+            description=data.get('description', ''),
+            completed=data.get('is_completed', False),  # Use 'completed' instead of 'is_completed'
+        )
+        return JsonResponse({'id': quest.id, 'message': 'Quest created successfully!'})
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def update_quest(request, campaign_id, quest_id):
+    if request.method == 'PUT':
+        try:
+            quest = Quest.objects.get(id=quest_id, campaign__id=campaign_id, campaign__user=request.user)
+            data = json.loads(request.body)
+
+            # Update quest fields
+            quest.title = data.get('title', quest.title)
+            quest.description = data.get('description', quest.description)
+            quest.completed = data.get('completed', quest.completed)
+            quest.save()
+
+            return JsonResponse({'message': 'Quest updated successfully!'}, status=200)
+        except Quest.DoesNotExist:
+            return JsonResponse({'error': 'Quest not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def delete_quest(request, campaign_id, quest_id):
+    if request.method == 'DELETE':
+        try:
+            quest = Quest.objects.get(id=quest_id, campaign__id=campaign_id, campaign__user=request.user)
+            quest.delete()
+            return JsonResponse({'message': 'Quest deleted successfully!'}, status=200)
+        except Quest.DoesNotExist:
+            return JsonResponse({'error': 'Quest not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def get_quest(request, campaign_id, quest_id):
+    if request.method == 'GET':
+        try:
+            quest = Quest.objects.get(id=quest_id, campaign__id=campaign_id, campaign__user=request.user)
+            data = {
+                'id': quest.id,
+                'title': quest.title,
+                'description': quest.description,
+                'completed': quest.completed,
+            }
+            return JsonResponse(data, status=200)
+        except Quest.DoesNotExist:
+            return JsonResponse({'error': 'Quest not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
+
+def list_quests(request, campaign_id):
+    if request.method == 'GET':
+        try:
+            campaign = Campaign.objects.get(id=campaign_id, user=request.user)
+            quests = Quest.objects.filter(campaign=campaign).values('id', 'title', 'description', 'completed')
+            return JsonResponse(list(quests), safe=False, status=200)
+        except Campaign.DoesNotExist:
+            return JsonResponse({'error': 'Campaign not found'}, status=404)
+
+    return JsonResponse({'message': 'Method not allowed!'}, status=405)
