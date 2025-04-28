@@ -79,8 +79,7 @@ function Quest() {
                 <div>
                     <h1>{quest.name}</h1>
                     <p>{quest.description}</p>
-                    <p>Status: {quest.is_completed ? 'Completed' : 'Not Completed'}</p>
-                    <p>Created At: {new Date(quest.created_at).toLocaleString()}</p>
+                    <p>Status: {quest.completed ? 'Completed' : 'Not Completed'}</p>
                     <button onClick={() => navigate(`/campaigns/${campaignId}/quests/edit/${questId}`)}>Edit Quest</button>
                     <button onClick={handleDelete}>Delete Quest</button>
                     <button onClick={() => navigate(`/campaigns/${campaignId}/quests`)}>Back to Quests</button>

@@ -65,7 +65,7 @@ function Quests() {
                     <li key={quest.id}>
                         <h2 onClick={() => navigate(`/campaigns/${campaignId}/quests/${quest.id}/`)}>{quest.title}</h2>
                         <p>{quest.description}</p>
-                        <p>Status: {quest.is_completed ? 'Completed' : 'In Progress'}</p>
+                        <p>Status: {quest.completed ? 'Completed' : 'In Progress'}</p>
                     </li>
                 ))}
             </ul>
